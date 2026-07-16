@@ -7,17 +7,20 @@ Une table de correspondance : INDEX → VECTEUR
 - Forme : (num_embeddings, embedding_dim)
 - Chaque ligne = le vecteur d'un mot
 
+```
            dim_0    dim_1    dim_2
 index 0  [ -0.38    -0.83    -1.68 ]
 index 1  [  1.30    -0.68     0.88 ]
 index 2  [ -0.53    -0.62    -0.90 ]
 index 3  [  1.09     0.90    -0.34 ]
+```
 
 ## Le calcul : juste une sélection de ligne !
 input = [1]  →  on prend la ligne 1  →  [ 1.30  -0.68   0.88 ]
 Pas de multiplication, pas de calcul → juste un coup d'index !
 
 ## Les dimensions de l'output
+``` 
 input shape  : (batch, nb_mots)
 output shape : (batch, nb_mots, embedding_dim)
                   │        │          │
@@ -37,6 +40,8 @@ output = [
      [-0.53, -0.62, -0.90]]  # séquence_1 : vecteur index 2
 ]
 
+```
+
 ## Points clés
 - Les poids sont ALÉATOIRES au départ
 - Les vecteurs sont APPRIS pendant l'entraînement
@@ -52,6 +57,7 @@ Réorganise un tenseur dans une nouvelle forme
 SANS changer les données elles-mêmes !
 
 ## La règle d'or
+```
 Total éléments AVANT = Total éléments APRÈS
 2 × 3 × 4 = 24  →  6 × 4 = 24  ✅
 2 × 3 × 4 = 24  →  5 × 4 = 20  ❌
@@ -71,18 +77,23 @@ AVANT : shape (2, 3, 4)          APRÈS : shape (6, 4)
 │ [17, 18, 19, 20] │
 │ [21, 22, 23, 24] │
 └──────────────────┘
+```
 
 ## Usage typique en Deep Learning
-# Certaines couches (ex: nn.Linear) attendent du 2D
-# On aplatit le batch et le temps ensemble
+```
+ Certaines couches (ex: nn.Linear) attendent du 2D
+On aplatit le batch et le temps ensemble
 
 logits.shape        # (B, T, C) → 3D
 logits.view(B*T, C) # (B*T, C) → 2D  ✅ prêt pour nn.Linear
+```
 
 ## Dimensions
+```
 B = batch    → nb de séquences
 T = time     → nb de mots par séquence
 C = channels → taille du vecteur
+```
 
 ## Points clés
 - Les données ne changent PAS
@@ -101,6 +112,7 @@ entre ses prédictions (logits) et les vraies réponses (targets)
 Plus la loss est proche de 0, mieux le modèle prédit !
 
 ## Les ingrédients
+```
 F.cross_entropy(logits, targets)
 
 logits  → scores bruts du modèle  shape : (N, C)
@@ -108,9 +120,10 @@ targets → vraies réponses         shape : (N,)
 
 N = nb d'exemples
 C = nb de classes (taille du vocabulaire)
+```
 
 ## Les 3 étapes internes
-
+```
 ÉTAPE 1 : Softmax → scores en probabilités
 logits = [ 1.2   0.5   -0.3   2.1 ]
                   │
@@ -141,7 +154,7 @@ loss = -log(0.85) = 0.16 ✅       loss = -log(0.05) = 2.99 ❌
 - Loss faible  → le modèle prédit bien
 - Loss élevée  → le modèle se trompe
 - Objectif     → minimiser cette valeur pendant l'entraînement
-
+```
 
 
 
@@ -285,7 +298,7 @@ idx_next = "mange"
 ─────────────────────────────────────────────
 idx = [ "je", "aime", "les", "chats", "mange" ]
                                         ▲
-
+```
 
 
 ----------------------------------------------------------------------------
@@ -616,7 +629,7 @@ Calculs    : N × M × K multiplications + additions
 Données lues : N×K + K×M bytes de matrices
 
 ex : N=512, M=512, K
-
+```
 
 
 ------------
@@ -970,7 +983,7 @@ batch_1 [ 0.12   0.55    0.05    0.22     0.11 ]  somme = 1 ✅
 │            3. div()  → FPU                          │
 │  EXECUTE : lance le kernel CUDA sur GPU             │
 └─────────────────────────────────────────────────────┘
-# Suite : ⚙️ CPU/GPU pour F.softmax
+```
 
 ## 🖥️ GPU EXECUTION - Détail complet
 
@@ -1127,7 +1140,7 @@ Arithmetic Intensity :
 ───────────────────────
 4.8M FLOPS / 12.8MB = 0.375 FL
 
-
+```
 
 
 # `torch.multinomial` - L'échantillonnage
@@ -1307,7 +1320,7 @@ run_3 : "le chat mange         run_3 : "le chat joue
 │  EXECUTE : lance le kernel CUDA sur GPU             │
 └─────────────────────────────────────────────────────┘
 
-# Suite : ⚙️ GPU EXECUTION pour torch.multinomial
+```
 
 ## 🖥️ GPU EXECUTION - Détail complet
 
@@ -1435,7 +1448,7 @@ Arithmetic Intensity :
 Seuil RTX 3090 = 38 FLOPS/byte
 
 0.25 << 38  →  MEMORY-BOUND ❌
-``
+```
 
 
 ------------------
@@ -1640,7 +1653,6 @@ a = torch
 
 ## 🎯 Oui ! Mais voilà comment ça marche vraiment
 
-```
 PyTorch maintient un STATE RNG global
 qui évolue en permanence
 
@@ -2001,7 +2013,7 @@ iter_N : idx shape (2, 4+N) → 2×(4+N)×4 bytes
 ancien idx  →  libéré de la VRAM  (garbage collector)
 nouveau idx →  alloué  en  VRAM  (plus grand)
 # Suite : 💾 MÉMOIRE GPU - Le coût croissant
-
+```
 
 ```
 VRAM
